@@ -1,0 +1,35 @@
+{
+  "name": "golos-dex-lib-js",
+  "version": "1.0.0",
+  "description": "JavaScript Client Library for Golos Api-Dex Service, and market-related purposes",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npm run build-browser && npm run build-node",
+    "build-browser": "rm -rf dist && NODE_ENV=production webpack && gzip -k -f ./dist/*.js && du -h ./dist/*",
+    "build-node": "mkdir -p ./lib && cp -r ./src/* ./lib/ && babel ./src --out-dir ./lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/golos-blockchain/dex-lib.git"
+  },
+  "author": "Golos Blockchain (https://github.com/golos-blockchain)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/golos-blockchain/dex-lib/issues"
+  },
+  "homepage": "https://github.com/golos-blockchain/dex-lib#readme",
+  "dependencies": {
+    "golos-lib-js": "^0.9.64"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/register": "^7.16.0",
+    "babel-loader": "^8.2.3",
+    "json-loader": "^0.5.4",
+    "webpack": "^5.62.1",
+    "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-cli": "^4.9.1"
+  }
+}
