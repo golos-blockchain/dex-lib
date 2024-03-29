@@ -35,9 +35,15 @@ class GolosDexApi {
         }
         this.opts = opts
         if (this.golos && opts.patch_golos) {
-            this.golos.dexapi = this
+            const { libs } = this.golos
+            if (!libs || !libs.add) {
+                throw new Error('No golos.libs or golos.libs.add. Please use golos.lib.js >= 0.9.68')
+            }
+            libs.add(this)
         }
     }
+
+    libName = 'dex'
 
     apidexUrl = (pathname) => {
         try {
