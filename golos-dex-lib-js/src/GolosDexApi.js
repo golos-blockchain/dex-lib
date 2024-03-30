@@ -13,6 +13,10 @@ const request_base = {
     }
 }
 
+const isFunction = (obj) => {
+    return typeof obj === 'function'
+}
+
 class GolosDexApi {
     constructor(golosOrOpts, opts) {
         if (golosOrOpts && golosOrOpts.config && golosOrOpts.config.set) {
@@ -67,7 +71,9 @@ class GolosDexApi {
 
     cached = {}
 
-    apidexGetPrices = async (sym) => {
+    apidexGetPrices = async ({ sym, timeout, cacheTime }) => {
+        timeout = timeout || 2000
+        cacheTime = cacheTime || 60000
         const empty = {
             price_usd: null,
             price_rub: null,
@@ -78,12 +84,12 @@ class GolosDexApi {
         try {
             const now = new Date()
             const cache = this.cached[sym]
-            if (cache && (now - cache.time) < 60000) {
+            if (cache && (now - cache.time) < cacheTime) {
                 return cache.resp
             } else {
                 let resp = await fetchEx(this.apidexUrl(`/api/v1/cmc/${sym}`), {
                     ...request,
-                    timeout: 2000
+                    timeout
                 })
                 resp = await resp.json()
                 if (resp.data && resp.data.slug)
@@ -103,7 +109,9 @@ class GolosDexApi {
 
     cachedAll = {}
 
-    apidexGetAll = async () => {
+    apidexGetAll = async (params) => {
+        const timeout = (params && params.timeout) || 1000
+        const cacheTime = (params && params.cacheTime) || 60000
         const empty = {
             data: {}
         }
@@ -111,12 +119,12 @@ class GolosDexApi {
         let request = Object.assign({}, request_base)
         try {
             const now = new Date()
-            if (this.cachedAll && (now - this.cachedAll.time) < 60000) {
+            if (this.cachedAll && (now - this.cachedAll.time) < cacheTime) {
                 return this.cachedAll.resp
             } else {
                 let resp = await fetchEx(this.apidexUrl(`/api/v1/cmc`), {
                     ...request,
-                    timeout: 1000
+                    timeout
                 })
                 resp = await resp.json()
                 this.cachedAll = {
@@ -130,7 +138,9 @@ class GolosDexApi {
         }
     }
 
-    apidexExchange = async (sell, buySym, direction = 'sell') => {
+    apidexExchange = async ({ sell, buySym, direction, timeout }) => {
+        timeout = timeout || 2000
+        direction = direction || 'sell'
         if (!this.golos) {
             console.error('apidexExchange not supported - GolosDexApi initialized without golos-lib-js')
             return null
@@ -145,7 +155,7 @@ class GolosDexApi {
         try {
             let resp = await fetchEx(this.apidexUrl(`/api/v1/exchange/` + sell.toString() + '/' + buySym + '/' + direction), {
                 ...request,
-                timeout: 2000
+                timeout
             })
             resp = await resp.json()
             if (resp.result) {

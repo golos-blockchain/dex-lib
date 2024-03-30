@@ -1,6 +1,6 @@
 {
   "name": "golos-dex-lib-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript Client Library for Golos Api-Dex Service, and market-related purposes",
   "main": "lib/index.js",
   "scripts": {
