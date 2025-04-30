@@ -202,7 +202,7 @@ class GolosDexApi {
         return Math.floor(Date.now() / 1000)
     }
 
-    makeExchangeTx = async (exchangeSteps, opts) => {
+    makeExchangeTx = async (chain, opts) => {
         if (!this.golos) {
             throw new Error('makeExchangeTx not supported - GolosDexApi initialized without golos-lib-js')
         }
@@ -213,15 +213,36 @@ class GolosDexApi {
 
         const defOpts = {
             op_type: 'limit_order_create',
-            orderid: (op, i, ops, step) => {
+            orderid: (op, i, ops, step, chainIdx) => {
                 return this.makeOrderID()
             }
         }
         opts = {...defOpts, ...opts}
 
+        let steps, subSteps
+        if (chain.steps) {
+            steps = chain.steps
+            const { subchains } = chain
+            if (subchains) {
+                if (subchains[1]) {
+                    throw new Error('More than 1 subchain - not supported (golos-dex-lib-js is too old?)')
+                }
+                if (subchains[0]) {
+                    const subc = subchains[0]
+                    if (subc.subchains && subc.subchains[0]) {
+                        throw new Error('Nested subchains in subchains - not supported (golos-dex-lib-js is too old?)')
+                    }
+                    subSteps = subc.steps
+                }
+            }
+        } else { // Old version. Not supports non-hybrid chains
+            steps = chain
+        }
+
         const ops = []
         let i = 0
-        for (const step of exchangeSteps) {
+        let chainIdx = 0
+        const processStep = async (step) => {
             const op = {}
 
             const copyField = (key, defVal) => {
@@ -247,11 +268,22 @@ class GolosDexApi {
             op.expiration = opts.expiration || this.ORDER_MAX_EXPIRATION
 
             if (isFunction(opts.orderid)) {
-                op.orderid = await opts.orderid(op, i++, ops, step)
+                op.orderid = await opts.orderid(op, i++, ops, step, chainIdx)
             }
 
             ops.push([opts.op_type, op])
         }
+
+        for (const step of steps) {
+            await processStep(step)
+        }
+        if (subSteps) {
+            chainIdx++
+            for (const step of subSteps) {
+                await processStep(step)
+            }
+        }
+
         return ops
     }
 }
