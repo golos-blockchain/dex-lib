@@ -1,6 +1,6 @@
 {
   "name": "golos-dex-lib-js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JavaScript Client Library for Golos Api-Dex Service, and market-related purposes",
   "main": "lib/index.js",
   "scripts": {
@@ -19,17 +19,16 @@
   },
   "homepage": "https://github.com/golos-blockchain/dex-lib#readme",
   "dependencies": {
-    "golos-lib-js": "^0.9.64"
+    "golos-lib-js": "^0.9.78"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "@babel/register": "^7.16.0",
-    "babel-loader": "^8.2.3",
-    "json-loader": "^0.5.4",
-    "webpack": "^5.62.1",
-    "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-cli": "^4.9.1"
+    "@babel/cli": "^7.27.1",
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.1",
+    "@babel/register": "^7.27.1",
+    "babel-loader": "^10.0.0",
+    "webpack": "^5.99.7",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^6.0.1"
   }
 }
